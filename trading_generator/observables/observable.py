@@ -24,6 +24,7 @@ class Observable:
         
         if observer not in self._observers:
             self._observers.append(observer)
+            print(f"Observer {id(observer)} has been attached to {type(self).__name__} {id(self)}.")
 
 
     def detach(self, 
@@ -36,6 +37,7 @@ class Observable:
         
         if observer in self._observers:
             self._observers.remove(observer)
+            print(f"Observer {id(observer)} has been detached from {type(self).__name__} {id(self)}. ")
 
 
     async def notify(self, 

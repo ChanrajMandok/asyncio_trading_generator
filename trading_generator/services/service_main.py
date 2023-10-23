@@ -13,6 +13,7 @@ class ServiceMain:
     def __init__(self):
         self.strategies = []
 
+
     async def run(self,
                   n: Optional[int] = 5) -> None:
         
@@ -23,7 +24,7 @@ class ServiceMain:
         1. Creating `n` generator objects that produce market data.
         2. Creating `n-1` strategy objects which each subscribe to a random selection of the generators.
         3. Creating a trader object that subscribes to all the strategies to aggregate their outputs.
-        4. Every 2 minutes, one of the strategies is terminated ("killed").
+        4. Every 30 seconds, one of the strategies is terminated .
         
         The implementation ensures that the destruction of one strategy or generator doesn't affect the others. 
         Even after a strategy is destroyed, the trader continues to function with the remaining strategies, 
@@ -60,29 +61,37 @@ class ServiceMain:
 
         # Close a strategy every 2 minutes
         for strategy in list(self.strategies):  
-            # wait for 2 minutes
-            await asyncio.sleep(120)  
+            # wait for 30 seconds
+            await asyncio.sleep(30)  
             # kill the strategy
             await self.kill_strategy(self.strategies.index(strategy)) 
 
 
-    async def kill_strategy(self,
+    async def kill_strategy(self, 
                             strategy_index: int):
         """Kill a specific strategy based on its index.
 
         Args:
             strategy_index (int): The index of the strategy to be killed.
         """
+        
         if strategy_index >= 0 and strategy_index < len(self.strategies):
-            # Get the strategy to be killed
             strategy_to_kill = self.strategies[strategy_index]
-            
-            # Detach all observers (including the Trader) from this strategy
-            for observer in list(strategy_to_kill._observers):
-                strategy_to_kill.detach(observer)
-            
-            # Print the strategy kill information
-            print(f"A Strategy has been killed.")
+
+            # terminate strategy
+            await strategy_to_kill.terminate(lambda: self.strategies)
+
+            # Remove the strategy's decision from Trader
+            trader_instance = Trader()  
+            trader_instance.remove_strategy(strategy_to_kill)
             
             # Remove the strategy from the strategies list
             del self.strategies[strategy_index]
+
+            # Print the number of strategies left
+            remaining_strategies = len(self.strategies)
+            print(f"{remaining_strategies} Strategies Remain.")
+            
+            # If no strategies are left, print a closing message
+            if remaining_strategies == 0:
+                print("No more strategies Service is closing.")

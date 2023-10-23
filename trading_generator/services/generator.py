@@ -29,7 +29,7 @@ class Generator(Observable):
         """
         
         while not self._stop_signal.is_set():
-            value = random.randint(1, 100)
+            value = random.randint(1, 10000)
             await self.notify((id(self), value))
             await asyncio.sleep(60)
 
@@ -48,3 +48,4 @@ class Generator(Observable):
             self._stop_signal.set()
             self._task.cancel()
             self._task = None
+            print(f"Generator {id(self)} has been stopped.")

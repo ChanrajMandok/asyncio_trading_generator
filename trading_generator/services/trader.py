@@ -4,6 +4,7 @@ from singleton_decorator import singleton
 
 from trading_generator.services.strategy import Strategy
 
+
 @singleton
 class Trader:
     """Represents a trader in a trading environment.
@@ -13,8 +14,7 @@ class Trader:
     stream of resulting values.
     """
 
-    def __init__(self, 
-                 *strategies: Strategy):
+    def __init__(self, *strategies: Strategy):
         """
         Initialize the trader with a set of strategies to listen to.
         
@@ -22,25 +22,42 @@ class Trader:
             *strategies (Strategy): A list of strategy objects.
         """
         
-        self._decisions = []
+        # Store decisions {strategy_id: decision}
+        self._decisions = {}
         for strategy in strategies:
             strategy.attach(self.update)
 
-
     async def update(self, 
-                     decision: int) -> None:
+                     update: tuple[Strategy, int]) -> None:
         """Receive a decision from a strategy and compute the median.
         
         Args:
             decision (int): The decision value from a strategy.
         """
         
-        self._decisions.append(decision)
-        median_decision = statistics.median(self._decisions)
+        strategy, decision  = update
+        strategy_id = id(strategy)
+        self._decisions[strategy_id] = decision
+        median_decision = statistics.median(self._decisions.values())
         self.print_decision(median_decision)
 
 
     @staticmethod
-    def print_decision(decision: int)-> None:
+    def print_decision(decision: int) -> None:
         """Print the decision value."""
-        print(f"Median Decision: {decision}")
+        print(f"Trader Median Decision: {decision}")
+        
+        
+    def remove_strategy(self, 
+                        strategy: Strategy) -> None:
+        """Remove a strategy's decision from the decisions dictionary.
+        
+        Args:
+            strategy (Strategy): The strategy object to be removed.
+        """
+        
+        # remove terminated strat from median decision
+        strategy_id = id(strategy)
+        if strategy_id in self._decisions:
+            del self._decisions[strategy_id]
+            print(f"Strategy {strategy_id} removed from Trader decisions.")
