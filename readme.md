@@ -36,6 +36,7 @@ My implementation revolves around a centralized design to maintain flexibility w
 **ServiceMain showcases the ability to Launch and terminate generators and strategies**
 
 - **Dynamic Creation & Destruction:** My system is designed such that we can instantiate any number of Generator and Strategy objects dynamically. The ServiceMain class serves as the demonstration centerpiece that validates My design's resilience. It automatically creates n generators, and then n-1 strategies each subscribing to a random selection of these generators. The Trader, being a singleton, listens to all these strategies.
+- **Dynamic Creation & Destruction:** My system is designed such that it can instantiate any number of Generator and Strategy objects dynamically. The ServiceMain classautomatically creates n generators, and then n-1 strategies each subscribing to a random selection of these generators. The Trader then listens to all these strategies.
 
 - **Observable Design Pattern:** The intercommunication between Generators, Strategies, and the Trader is achieved using the Observable pattern. Generators, as observables, notify their decisions to Strategies, which in turn, after processing, notify the Trader.
 
