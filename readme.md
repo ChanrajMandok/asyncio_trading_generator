@@ -1,4 +1,4 @@
-# **Geo Alpha** - Trading Generator Excersize 
+# **Trading Generator Excersize**
 
 ## Setup trading_generator in VSC
 

@@ -1,5 +1,5 @@
 """
-WSGI config for geo_alpha project.
+WSGI config for asyncio_trading_generator project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'geo_alpha.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'asyncio_trading_generator.settings')
 
 application = get_wsgi_application()
